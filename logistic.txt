@@ -1,0 +1,40 @@
+import pandas as pd
+data =pd.read_csv("Student-University.csv", index_col=False, header=None)
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler().fit(X)
+print(scaler)
+print(scaler.mean_)
+X = scaler.transform(X)
+
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+X_train = pd.DataFrame(X_train)
+X_test = pd.DataFrame(X_test)
+
+x1 = X_train[0].values
+x2 = X_train[1].values
+
+b0,b1,b2 =0,0,0
+
+y_train = np.array(y_train)
+
+for i in range(0,10000):
+    yprd = b0 + b1*x1 + b2*x2
+    pred = 1 / (1+ np.exp(-yprd))
+
+    D_b0 = -2 * sum((y_train - pred) * pred * (1 - pred))  
+    D_b1 = -2 * sum(x1 * (y_train - pred) * pred * (1 - pred))  
+    D_b2 = -2 * sum(x2 * (y_train - pred) * pred * (1 - pred))  
+
+    b0 = b0 - 0.01 * D_b0
+    b1 = b1 - 0.01 * D_b1
+
+pred = np.round(pred)
+
+X_test_1 =  X_test[0].values
+X_test_2 =  X_test[1].values
+
+yprd_test = b0 + b1*X_test_1 + b2*X_test_2
+pred_test = 1 / (1+ np.exp(-yprd_test))

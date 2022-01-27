@@ -1,0 +1,31 @@
+X=data.drop("Outcome",axis=1)
+y=data["Outcome"]
+
+from sklearn.preprocessing import StandardScaler
+scaler=StandardScaler()
+X_scaled=scaler.fit_transform(X)
+
+from sklearn.model_selection import train_test_split
+X_train,X_test,Y_train,Y_test=train_test_split(X_scaled,y,
+                 stratify=y,test_size=0.10,random_state=34)
+
+from sklearn.ensemble import RandomForestClassifier
+classifier = RandomForestClassifier(n_estimators=100)
+classifier.fit(X_train,Y_train)
+
+y_pred = classifier.predict(X_test)
+
+pd.Series(classifier.feature_importances_, index = X.columns).plot(kind='barh')
+
+pd.DataFrame({'features': X.columns,
+              'importances':classifier.feature_importances_})
+		.sort_values(by="importances",ascending=False)
+
+from sklearn.tree import DecisionTreeClassifier
+clf=DecisionTreeClassifier()
+clf.fit(X_train,Y_train)
+
+Y_pred = clf.predict(X_test)
+
+from sklearn.metrics import accuracy_score
+print("Accuracy-DecisionTree :",accuracy_score(Y_test,Y_pred))
